@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WoW Quest Journal</title>
+  <style>
+        body {
+      background-color: #171717;
+      background-image: url("https://www.transparenttextures.com/patterns/egg-shell.png");
+      font-family: "Verdana", sans-serif;
+      color: #fdf6d8;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 36px;
+      text-align: center;
+      color: gold;
+      margin-bottom: 30px;
+    }
+    .quest {
+      background: #2e2e2e;
+      border: 2px solid goldenrod;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .quest-title {
+      font-size: 24px;
+      color: gold;
+    }
+    .quest-field {
+      margin: 5px 0;
+    }
+    form {
+      background: #333;
+      border: 2px solid goldenrod;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #fff;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: goldenrod;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <h1>📜 Журнал Заданий</h1>
+
+  <form id="quest-form">
+    <label for="title">Название</label>
+    <input type="text" id="title" name="title" required />
+
+    <label for="objective">Цель</label>
+    <input type="text" id="objective" name="objective" required />
+
+    <label for="description">Описание</label>
+    <textarea id="description" name="description" rows="3" required></textarea>
+
+    <label for="reward">Награда</label>
+    <input type="text" id="reward" name="reward" required />
+
+    <button type="submit">➕ Добавить задание</button>
+  </form>
+
+  <div id="quests"></div>
+
+  <script>
+    const API_URL = "https://w47akzbuag.execute-api.us-east-1.amazonaws.com/default/quests";
+
+    async function fetchQuests() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const container = document.getElementById("quests");
+      container.innerHTML = "";
+
+      data.forEach((quest) => {
+        const div = document.createElement("div");
+        div.className = "quest";
+        div.innerHTML = `
+          <div class="quest-title">${quest.title}</div>
+          <div class="quest-field"><strong>🎯 Цель:</strong> ${quest.objective}</div>
+          <div class="quest-field"><strong>📖 Описание:</strong> ${quest.description}</div>
+          <div class="quest-field"><strong>🎁 Награда:</strong> ${quest.reward}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("quest-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newQuest = {
+        title: e.target.title.value,
+        objective: e.target.objective.value,
+        description: e.target.description.value,
+        reward: e.target.reward.value
+      };
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newQuest)
+      });
+
+      e.target.reset();
+      await fetchQuests();
+    });
+
+    fetchQuests();
+  </script>
+</body>
+</html>

@@ -1,2 +1,1 @@
-# CodexTest
-Codex_Test
+# Wow Journal fun project to do list

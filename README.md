@@ -1,1 +1,3 @@
-# Wow Journal fun project to do list
+# Wow Journal 
+fun project 
+to do list
